@@ -42,7 +42,7 @@ def game_over(screen: pg.Surface) -> None:
     bl_rct = bl_img.get_rect()
     bl_rct = 0, 0
 
-    # ぴえんこうかとん2匹
+    # 泣いているこうかとんの画像2枚
     crkk_img = pg.image.load("fig/8.png")
     crkk_rct1 = crkk_img.get_rect()
     crkk_rct2 = crkk_img.get_rect()
