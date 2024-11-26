@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -12,6 +13,40 @@ DELTA = {
         pg.K_LEFT:(-5, 0),
         pg.K_RIGHT:(5, 0),
         }
+
+def game_over(screen: pg.Surface) -> None:
+    """
+    引数:screen
+    戻り値:None
+    """
+    # ブラックアウト実装
+    bl_img = pg.Surface((WIDTH, HEIGHT))  # 空のSurface
+    pg.draw.rect(bl_img, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT))
+    pg.Surface.set_alpha(bl_img, 128)
+    bl_rct = bl_img.get_rect()
+    bl_rct = 0, 0
+
+    # ぴえんこうかとん2匹
+    crkk_img = pg.image.load("fig/8.png")
+    crkk_rct1 = crkk_img.get_rect()
+    crkk_rct2 = crkk_img.get_rect()
+    crkk_rct1 = WIDTH/2-200, HEIGHT/2-50
+    crkk_rct2 = WIDTH/2+200, HEIGHT/2-50
+    
+    # Game Overの文字列
+    owarimoji = pg.font.Font(None, 80)
+    txt = owarimoji.render("Game Over", True, (255, 255, 255))
+
+    # 表示
+    screen.blit(bl_img, bl_rct)
+    screen.blit(crkk_img, crkk_rct1)
+    screen.blit(crkk_img, crkk_rct2)
+    screen.blit(txt, (WIDTH/2-130, HEIGHT/2-50))
+
+    pg.display.update()
+
+    # 五秒表示
+    time.sleep(5)
 
 def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -48,9 +83,9 @@ def main():
             if event.type == pg.QUIT: 
                 return
             
-        if kk_rct.colliderect(bb_rct):
-            print("ゲームオーバー")
-            return # ゲームオーバー
+        if kk_rct.colliderect(bb_rct):  # ゲームオーバー判定
+            game_over(screen)
+            return
 
         screen.blit(bg_img, [0, 0]) 
 
