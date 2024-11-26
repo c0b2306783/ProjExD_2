@@ -14,8 +14,24 @@ DELTA = {
         pg.K_RIGHT:(5, 0),
         }
 
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    爆弾のサイズが時間経過で拡大・加速する。
+    引数:なし
+    戻り値:10段階の大きさのサーフェスと10段階の加速度をタプルとして返す
+    """
+    bb_imgs = []
+    bb_accs = [a for a in range(1,10)]  # 加速度のリスト
+    for r in range(1, 11):  # 拡大する爆弾Surfaceのリスト
+        bb_img = pg.Surface((20*r, 20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_img.set_colorkey((0, 0, 0))
+        bb_imgs.append(bb_img)
+    return bb_imgs, bb_accs
+
 def game_over(screen: pg.Surface) -> None:
     """
+    ゲームオーバー時に呼び出される。
     引数:screen
     戻り値:None
     """
@@ -72,12 +88,15 @@ def main():
     bb_img.set_colorkey((0, 0, 0))
     bb_rct = bb_img.get_rect()  # 爆弾Rectの抽出
     bb_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)  # 爆弾の中心座標設定
-    vx, vy = 5, 5
+    vx, vy = 5, 5 # 爆弾の移動ベクトル
+
 
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
     clock = pg.time.Clock()
     tmr = 0
+    
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -112,7 +131,13 @@ def main():
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)
 
-        bb_rct.move_ip(vx, vy)
+        bb_imgs, bb_accs = init_bb_imgs()  # 爆弾の加速と拡大
+        avx = vx*bb_accs[min(tmr//500, 9)]
+        avy = vy*bb_accs[min(tmr//500, 9)]
+        bb_img = bb_imgs[min(tmr//500, 9)]
+        
+
+        bb_rct.move_ip(avx, avy)
         yoko, tate = check_bound(bb_rct)
         if not yoko:  # 横にはみ出たら
             vx *= -1
